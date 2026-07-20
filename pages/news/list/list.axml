@@ -1,0 +1,17 @@
+<view class="page-news-list">
+  <view class="news-item" a:for="{{newsList}}" a:for-item="item" a:for-index="idx" data-id="{{item._id}}" onTap="onNewsTap">
+    <image class="news-img" src="{{item.displayImage}}" mode="aspectFill" />
+    <view class="news-info">
+      <view class="news-title">{{item.title}}</view>
+      <view class="news-time">{{item.createTime}}</view>
+    </view>
+  </view>
+
+  <view class="empty-state" a:if="{{newsList.length === 0 && !loading}}">
+    <text>暂无资讯</text>
+  </view>
+
+  <view class="loading-state" a:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

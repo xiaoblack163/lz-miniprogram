@@ -1,0 +1,128 @@
+<view class="page-detail">
+
+  <!-- ====== Step 1: 表单填写 ====== -->
+  <block a:if="{{step === 'form'}}">
+    <!-- 头图 -->
+    <image
+      class="head-image"
+      src="{{activity.headImage || 'https://via.placeholder.com/750x400/1677FF/ffffff?text=Activity'}}"
+      mode="widthFix"
+    />
+
+    <!-- 已参与提示 -->
+    <view class="participated-tip" a:if="{{hasParticipated && previousLead}}">
+      <text class="participated-icon">📋</text>
+      <view class="participated-content">
+        <text class="participated-title">您已参加过该活动</text>
+        <text class="participated-time" a:if="{{previousLead.createTime}}">提交时间：{{previousLead.createTime}}</text>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="form-title">{{activity.title || activity.name}}</view>
+      <view class="form-desc" a:if="{{activity.description}}">{{activity.description}}</view>
+
+      <!-- 动态表单字段 -->
+      <view class="form-fields">
+        <view class="form-group" a:for="{{formFields}}" a:for-item="field" a:for-index="idx" key="field.key">
+          <!-- text / phone 类型 -->
+          <input
+            a:if="{{field.type === 'text' || field.type === 'phone'}}"
+            class="form-input"
+            type="{{field.type === 'phone' ? 'phone' : 'text'}}"
+            placeholder="{{field.placeholder || '请输入' + field.label}}"
+            value="{{formData[field.key]}}"
+            data-key="{{field.key}}"
+            onInput="onFieldInput"
+          />
+          <!-- select 类型 -->
+          <view a:elif="{{field.type === 'select'}}" class="form-select" onTap="onSelectTap" data-key="{{field.key}}" data-dict="{{field.dictCode}}">
+            <text class="select-label" a:if="{{formData[field.key]}}">{{formData[field.key] && formData[field.key].label || formData[field.key]}}</text>
+            <text class="select-placeholder" a:else>{{field.placeholder || '请选择' + field.label}}</text>
+            <text class="select-arrow">›</text>
+          </view>
+          <!-- upload 类型 -->
+          <view a:elif="{{field.type === 'upload'}}" class="form-upload" onTap="onUploadField" data-key="{{field.key}}">
+            <text class="upload-icon">+</text>
+            <text class="upload-text">{{formData[field.key] ? '已上传' : field.placeholder || '上传' + field.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 验证错误 -->
+      <view class="form-error" a:if="{{formError}}">{{formError}}</view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-bar">
+      <button class="submit-btn" disabled="{{submitting}}" onTap="onSubmit">
+        {{submitting ? '提交中...' : '提交报名'}}
+      </button>
+    </view>
+
+    <!-- 底图 -->
+    <image
+      class="bg-image"
+      src="{{activity.bgImage}}"
+      mode="widthFix"
+      a:if="{{activity.bgImage}}"
+    />
+  </block>
+
+  <!-- ====== Step 2: 协议上传 ====== -->
+  <block a:elif="{{step === 'upload'}}">
+    <!-- 续传提示 -->
+    <view class="participated-tip" a:if="{{hasParticipated && previousLead}}">
+      <text class="participated-icon">📋</text>
+      <view class="participated-content">
+        <text class="participated-title">您已提交过报名信息，请完成协议上传</text>
+        <text class="participated-time" a:if="{{previousLead.createTime}}">提交时间：{{previousLead.createTime}}</text>
+      </view>
+    </view>
+
+    <view class="upload-page">
+      <view class="upload-page-icon">📄</view>
+      <text class="upload-page-title">上传协议文件</text>
+      <text class="upload-page-desc">请上传您的协议文件（图片或PDF）</text>
+      <view class="upload-page-btn" onTap="onUploadAgreement">
+        <text a:if="{{!agreementUrl}}">选择文件</text>
+        <text a:else>重新选择</text>
+      </view>
+      <text class="upload-page-file" a:if="{{agreementFileName}}">已选择：{{agreementFileName}}</text>
+      <button class="submit-btn upload-next-btn" disabled="{{!agreementUrl || uploadSubmitting}}" onTap="onUploadNext">
+        下一步
+      </button>
+    </view>
+  </block>
+
+  <!-- ====== Step 3: 协议阅读 ====== -->
+  <block a:elif="{{step === 'agreement'}}">
+    <view class="agreement-page">
+      <view class="agreement-page-icon">📝</view>
+      <text class="agreement-page-title">协议确认</text>
+      <view class="agreement-preview">
+        <image class="agreement-image" src="{{agreementUrl}}" mode="widthFix" a:if="{{agreementUrl}}" />
+      </view>
+      <view class="agreement-check">
+        <view class="checkbox {{agreed ? 'checked' : ''}}" onTap="onToggleAgreed">
+          <text a:if="{{agreed}}">✓</text>
+        </view>
+        <text class="agreement-text">我已阅读并同意以上协议</text>
+      </view>
+      <button class="submit-btn agreement-confirm-btn" disabled="{{!agreed || agreementSubmitting}}" onTap="onAgreementConfirm">
+        确认完成
+      </button>
+    </view>
+  </block>
+
+  <!-- ====== Step 4: 完成页 ====== -->
+  <block a:elif="{{step === 'done'}}">
+    <view class="done-page">
+      <view class="done-page-icon">✓</view>
+      <text class="done-page-title">提交成功</text>
+      <text class="done-page-desc">您的报名信息已提交，我们会尽快与您联系</text>
+      <button class="submit-btn" onTap="onBack">返回首页</button>
+    </view>
+  </block>
+
+</view>

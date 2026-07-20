@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "noEmit": false,
+    "esModuleInterop": false,
+    "noImplicitThis": false,
+    "types": [
+      "@mini-types/alipay"
+    ],
+    "lib": [
+      "ES2015",
+      "DOM"
+    ]
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

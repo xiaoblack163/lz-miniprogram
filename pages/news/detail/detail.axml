@@ -1,0 +1,11 @@
+<view class="page-news-detail" a:if="{{!loading && news}}">
+  <image class="detail-cover" src="{{news.displayImage}}" mode="widthFix" />
+  <view class="detail-body">
+    <view class="detail-title">{{news.title}}</view>
+    <view class="detail-time">{{news.createTime}}</view>
+  </view>
+</view>
+
+<view class="loading-state" a:if="{{loading}}">
+  <text>加载中...</text>
+</view>

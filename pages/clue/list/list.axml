@@ -1,0 +1,93 @@
+<view class="page-clue-list">
+  <!-- 未登录提示 -->
+  <view class="login-hint" a:if="{{notLoggedIn}}">
+    <view class="login-hint-icon">🔒</view>
+    <view class="login-hint-title">请先登录</view>
+    <view class="login-hint-desc">登录后查看您的预约记录</view>
+    <button class="login-hint-btn" onTap="onGoLogin">去登录</button>
+  </view>
+
+  <!-- 状态筛选标签 -->
+  <view class="filter-tabs" a:if="{{!notLoggedIn}}">
+    <view
+      class="filter-tab {{filterStatus === 'all' ? 'filter-tab-active' : ''}}"
+      data-status="all"
+      onTap="onFilterTap"
+    >
+      全部
+    </view>
+    <view
+      class="filter-tab {{filterStatus === 'pending' ? 'filter-tab-active' : ''}}"
+      data-status="pending"
+      onTap="onFilterTap"
+    >
+      待审核
+    </view>
+    <view
+      class="filter-tab {{filterStatus === 'approved' ? 'filter-tab-active' : ''}}"
+      data-status="approved"
+      onTap="onFilterTap"
+    >
+      已通过
+    </view>
+    <view
+      class="filter-tab {{filterStatus === 'rejected' ? 'filter-tab-active' : ''}}"
+      data-status="rejected"
+      onTap="onFilterTap"
+    >
+      已驳回
+    </view>
+  </view>
+
+  <!-- 预约列表 -->
+  <view class="clue-list" a:if="{{!notLoggedIn}}">
+    <view
+      class="clue-card"
+      a:for="{{filteredClues}}"
+      a:for-item="item"
+      a:for-index="index"
+    >
+      <view class="card-header" data-id="{{item._id}}" onTap="onClueTap">
+        <view class="activity-name">{{item.activityName || item.jobName || '活动'}}</view>
+        <view class="submit-time">{{item.createTime}}</view>
+      </view>
+
+      <view class="card-body">
+        <view class="info-row">
+          <text class="info-label">姓名：</text>
+          <text>{{item.name}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">手机：</text>
+          <text>{{item.tel}}</text>
+        </view>
+      </view>
+
+      <view class="card-footer">
+        <view class="card-tags">
+          <view class="tag tag-review {{item._reviewStatusClass}}">
+            {{item._reviewStatusText}}
+          </view>
+          <view class="tag tag-benefit {{item._benefitStatusClass}}" a:if="{{item.benefitEnabled}}">
+            {{item._benefitStatusText}}
+          </view>
+        </view>
+        <view class="card-actions">
+          <view class="action-link" data-id="{{item._id}}" onTap="onClueTap">查看预约详情 ›</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" a:if="{{filteredClues.length === 0 && !loading && !notLoggedIn}}">
+    <view class="empty-icon">📋</view>
+    <view class="empty-text">暂无预约记录</view>
+    <view class="empty-desc">您还没有参加任何活动</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-state" a:if="{{loading}}">
+    <view class="loading-text">加载中...</view>
+  </view>
+</view>

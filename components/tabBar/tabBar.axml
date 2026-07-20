@@ -1,0 +1,15 @@
+<view class="tabbar">
+  <view
+    class="tabbar-item {{current === index ? 'tabbar-item--active' : ''}}"
+    a:for="{{list}}"
+    a:for-index="index"
+    a:for-item="item"
+    key="item._id"
+    data-index="{{index}}"
+    data-link="{{item.linkUrl}}"
+    onTap="onItemTap"
+  >
+    <image class="tabbar-icon" src="{{item.icon}}" mode="aspectFit" />
+    <text class="tabbar-label">{{item.title}}</text>
+  </view>
+</view>

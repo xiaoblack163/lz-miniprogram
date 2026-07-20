@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/activity/list/list",
+    "pages/activity/detail/detail",
+    "pages/clue/list/list",
+    "pages/clue/detail/detail",
+    "pages/user/index/index",
+    "pages/login/login",
+    "pages/news/list/list",
+    "pages/news/detail/detail"
+  ],
+  "lazyCodeLoading": "renderedComponents"
+}

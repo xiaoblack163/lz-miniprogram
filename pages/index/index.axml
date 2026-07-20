@@ -1,0 +1,103 @@
+<view class="page-home">
+  <!-- Banner Swiper -->
+  <swiper
+    class="banner-swiper"
+    indicator-dots="{{banners.length > 1}}"
+    autoplay="{{banners.length > 1}}"
+    interval="3000"
+    circular="{{banners.length > 1}}"
+  >
+    <swiper-item a:for="{{banners}}" a:for-item="banner" a:for-index="index">
+      <image
+        class="banner-img"
+        src="{{banner.imageUrl || 'https://via.placeholder.com/750x499/1677FF/ffffff?text=Banner'}}"
+        mode="scaleToFill"
+        onTap="onBannerTap"
+        data-link-url="{{banner.linkUrl}}"
+        data-enable-jump="{{banner.enableJump}}"
+      />
+    </swiper-item>
+    <swiper-item a:if="{{banners.length === 0}}">
+      <image
+        class="banner-img"
+        src="https://via.placeholder.com/750x499/1677FF/ffffff?text=Car+Activity"
+        mode="scaleToFill"
+      />
+    </swiper-item>
+  </swiper>
+
+  <!-- 广告位 -->
+  <view class="ad-slot" a:if="{{adSlot && adSlot.imageUrl}}">
+    <image
+      class="ad-slot-img"
+      src="{{adSlot.imageUrl}}"
+      mode="widthFix"
+      onTap="onAdTap"
+      data-link-url="{{adSlot.linkUrl}}"
+    />
+  </view>
+
+  <!-- 热门活动 -->
+  <view class="section-title" a:if="{{activities.length > 0}}">热门活动</view>
+  <view class="activity-list">
+    <view
+      class="activity-card"
+      a:for="{{activities}}"
+      a:for-item="item"
+      a:for-index="index"
+      data-code="{{item.code}}"
+      onTap="onActivityTap"
+    >
+      <image
+        class="card-cover"
+        src="{{item.displayImage || 'https://via.placeholder.com/345x180/1677FF/ffffff?text=Activity'}}"
+        mode="aspectFill"
+      />
+    </view>
+  </view>
+
+  <!-- 最新资讯 -->
+  <view class="section-header" a:if="{{hotNews.length > 0}}">
+    <view class="section-title">最新资讯</view>
+    <view class="section-more" onTap="onNewsMore">更多 ›</view>
+  </view>
+  <view class="news-grid" a:if="{{hotNews.length > 0}}">
+    <view
+      class="news-item"
+      a:for="{{hotNews}}"
+      a:for-item="item"
+      a:for-index="idx"
+      data-index="{{idx}}"
+      onTap="onNewsTap"
+    >
+      <image
+        class="news-cover"
+        src="{{item.displayImage || 'https://via.placeholder.com/160x160/f0f0f0/999?text=News'}}"
+        mode="aspectFill"
+      />
+      <image
+        a:if="{{item.contentImage}}"
+        class="news-content-img"
+        src="{{item.contentImage}}"
+        mode="aspectFill"
+      />
+      <view class="news-title">{{item.title}}</view>
+    </view>
+  </view>
+
+  <!-- Empty State -->
+  <view class="empty-state" a:if="{{activities.length === 0 && hotNews.length === 0 && !loading}}">
+    <view class="empty-text">暂无内容</view>
+  </view>
+
+  <!-- Loading -->
+  <view class="loading-state" a:if="{{loading}}">
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <!-- Custom TabBar -->
+  <tabbar
+    list="{{menuList}}"
+    activeIndex="{{activeMenuIndex}}"
+  />
+</view>

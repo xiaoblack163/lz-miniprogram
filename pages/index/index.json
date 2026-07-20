@@ -1,0 +1,6 @@
+{
+  "defaultTitle": "首页",
+  "usingComponents": {
+    "tabbar": "../../components/tabBar/tabBar"
+  }
+}

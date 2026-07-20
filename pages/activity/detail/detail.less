@@ -1,0 +1,312 @@
+.page-detail {
+  min-height: 100vh;
+  background-color: #F8F9FB;
+  padding-bottom: 120rpx;
+}
+
+/* ====== 头图 / 底图 ====== */
+.head-image {
+  width: 100%;
+  display: block;
+}
+
+.bg-image {
+  width: 100%;
+  display: block;
+  margin-top: 20rpx;
+}
+
+/* ====== 已参与提示条 ====== */
+.participated-tip {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 32rpx;
+  padding: 24rpx 28rpx;
+  background: #FFF7E6;
+  border: 2rpx solid #FFD591;
+  border-radius: 16rpx;
+
+  .participated-icon {
+    font-size: 40rpx;
+    margin-right: 20rpx;
+  }
+
+  .participated-content {
+    flex: 1;
+
+    .participated-title {
+      font-size: 28rpx;
+      font-weight: 500;
+      color: #AD6800;
+    }
+
+    .participated-time {
+      font-size: 24rpx;
+      color: #BF8F00;
+      margin-top: 6rpx;
+    }
+  }
+}
+
+/* ====== 表单区域 ====== */
+.form-section {
+  padding: 32rpx;
+
+  .form-title {
+    font-size: 40rpx;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 12rpx;
+  }
+
+  .form-desc {
+    font-size: 28rpx;
+    color: #999;
+    margin-bottom: 40rpx;
+    line-height: 1.5;
+  }
+}
+
+.form-fields {
+  .form-group {
+    margin-bottom: 24rpx;
+  }
+}
+
+.form-input {
+  width: 100%;
+  height: 96rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 0 28rpx;
+  font-size: 30rpx;
+  color: #333;
+  box-sizing: border-box;
+  border: 2rpx solid #F0F0F0;
+}
+
+.form-select {
+  display: flex;
+  align-items: center;
+  height: 96rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 0 28rpx;
+  border: 2rpx solid #F0F0F0;
+
+  .select-label {
+    font-size: 30rpx;
+    color: #333;
+    flex: 1;
+  }
+
+  .select-placeholder {
+    font-size: 30rpx;
+    color: #CCC;
+    flex: 1;
+  }
+
+  .select-arrow {
+    font-size: 36rpx;
+    color: #CCC;
+  }
+}
+
+.form-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: #FFFFFF;
+  border: 2rpx dashed #DDD;
+  border-radius: 16rpx;
+
+  .upload-icon {
+    font-size: 32rpx;
+    color: #1677FF;
+    margin-right: 12rpx;
+  }
+
+  .upload-text {
+    font-size: 28rpx;
+    color: #999;
+  }
+}
+
+.form-error {
+  font-size: 26rpx;
+  color: #FF4D4F;
+  text-align: center;
+  margin-top: 16rpx;
+}
+
+/* ====== 提交按钮 ====== */
+.submit-bar {
+  padding: 40rpx 32rpx 0;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  background: linear-gradient(135deg, #1677FF, #4096FF);
+  color: #FFF;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 48rpx;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(22, 119, 255, 0.3);
+
+  &[disabled] {
+    opacity: 0.5;
+    box-shadow: none;
+  }
+}
+
+/* ====== 协议上传页 ====== */
+.upload-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 200rpx 60rpx 0;
+
+  .upload-page-icon {
+    font-size: 80rpx;
+    margin-bottom: 32rpx;
+  }
+
+  .upload-page-title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 16rpx;
+  }
+
+  .upload-page-desc {
+    font-size: 28rpx;
+    color: #999;
+    margin-bottom: 80rpx;
+  }
+
+  .upload-page-btn {
+    width: 400rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    text-align: center;
+    background: #F0F7FF;
+    color: #1677FF;
+    font-size: 30rpx;
+    border-radius: 44rpx;
+    margin-bottom: 24rpx;
+  }
+
+  .upload-page-file {
+    font-size: 26rpx;
+    color: #666;
+    margin-bottom: 80rpx;
+  }
+
+  .upload-next-btn {
+    width: 100%;
+  }
+}
+
+/* ====== 协议确认页 ====== */
+.agreement-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 60rpx 0;
+
+  .agreement-page-icon {
+    font-size: 80rpx;
+    margin-bottom: 32rpx;
+  }
+
+  .agreement-page-title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 40rpx;
+  }
+
+  .agreement-preview {
+    width: 100%;
+    margin-bottom: 40rpx;
+
+    .agreement-image {
+      width: 100%;
+      border-radius: 16rpx;
+      border: 2rpx solid #F0F0F0;
+    }
+  }
+
+  .agreement-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 60rpx;
+
+    .checkbox {
+      width: 36rpx;
+      height: 36rpx;
+      border-radius: 8rpx;
+      border: 2rpx solid #CCC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16rpx;
+      font-size: 22rpx;
+      color: #FFF;
+    }
+
+    .checked {
+      background: #1677FF;
+      border-color: #1677FF;
+    }
+
+    .agreement-text {
+      font-size: 28rpx;
+      color: #333;
+    }
+  }
+
+  .agreement-confirm-btn {
+    width: 100%;
+  }
+}
+
+/* ====== 完成页 ====== */
+.done-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 300rpx 60rpx 0;
+
+  .done-page-icon {
+    width: 120rpx;
+    height: 120rpx;
+    line-height: 120rpx;
+    text-align: center;
+    background: #52C41A;
+    color: #FFF;
+    font-size: 56rpx;
+    font-weight: bold;
+    border-radius: 60rpx;
+    margin-bottom: 32rpx;
+  }
+
+  .done-page-title {
+    font-size: 40rpx;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 16rpx;
+  }
+
+  .done-page-desc {
+    font-size: 28rpx;
+    color: #999;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 80rpx;
+  }
+}
