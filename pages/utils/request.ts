@@ -1,7 +1,7 @@
 import { getToken, clearToken } from './auth';
 
-const BASE_URL = 'http://localhost:3001/api/app';
-const IMG_HOST = 'http://localhost:3001/';
+const BASE_URL = 'https://www.lz-tech.com.cn/api/app';
+const IMG_HOST = 'https://www.lz-tech.com.cn/';
 
 export function resolveImage(url: string): string {
   if (!url) return '';

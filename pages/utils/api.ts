@@ -38,7 +38,7 @@ export const api = {
     })();
     return new Promise((resolve, reject) => {
       my.uploadFile({
-        url: `http://localhost:3001/api/app/clue/${id}/agreement`,
+        url: `https://www.lz-tech.com.cn/api/app/clue/${id}/agreement`,
         filePath,
         fileName: 'file',
         header: { 'Authorization': token ? `Bearer ${token}` : '' },
@@ -68,7 +68,7 @@ export const api = {
     })();
     return new Promise((resolve, reject) => {
       my.uploadFile({
-        url: 'http://localhost:3001/api/platform/activity/uploadImage',
+        url: 'https://www.lz-tech.com.cn/api/platform/activity/uploadImage',
         filePath,
         fileName: 'file',
         header: { 'Authorization': token ? `Bearer ${token}` : '' },

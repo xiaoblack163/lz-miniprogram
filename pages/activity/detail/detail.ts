@@ -21,6 +21,7 @@ Page({
     formData: {} as Record<string, any>,
     formError: '',
     submitting: false,
+    privacyAgreed: false,
     // 提交后保留的关键信息（用于协议回填）
     submittedPhone: '',
     // Protocol
@@ -54,9 +55,18 @@ Page({
       activity.dictionaries = result.dictionaries || {};
       const fields = (activity.formFields || []).sort((a: FormField, b: FormField) => (a.sort || 0) - (b.sort || 0));
 
-      // 处理图片 URL
-      if (activity.headImage) activity.headImage = resolveImage(activity.headImage);
-      if (activity.bgImage) activity.bgImage = resolveImage(activity.bgImage);
+      // 处理头图（数组或单图统一转为数组）
+      if (Array.isArray(activity.headImage) && activity.headImage.length > 0) {
+        activity.headImage = activity.headImage.map((url: string) => resolveImage(url));
+      } else if (activity.headImage && typeof activity.headImage === 'string') {
+        activity.headImage = [resolveImage(activity.headImage)];
+      }
+      // 处理底图
+      if (Array.isArray(activity.bgImage) && activity.bgImage.length > 0) {
+        activity.bgImage = activity.bgImage.map((url: string) => resolveImage(url));
+      } else if (activity.bgImage && typeof activity.bgImage === 'string') {
+        activity.bgImage = [resolveImage(activity.bgImage)];
+      }
       if (activity.displayImage) activity.displayImage = resolveImage(activity.displayImage);
 
       this.setData({
@@ -221,8 +231,15 @@ Page({
   async onSubmit() {
     const { formFields, formData, activity } = this.data;
 
-    // 校验必填字段
+    // 校验隐私协议
+    if (!this.data.privacyAgreed) {
+      this.setData({ formError: '请先阅读并同意隐私保护协议' });
+      return;
+    }
+
+    // 校验必填字段（固定值字段不需要校验）
     for (const field of formFields) {
+      if (field.type === 'fixed') continue;
       if (field.required && !formData[field.key]) {
         this.setData({ formError: `请填写${field.label}` });
         return;
@@ -234,6 +251,14 @@ Page({
     try {
       // 提取字典选项的 value（formData 中存的是 { label, value } 对象）
       const submitData: Record<string, any> = {};
+
+      // 固定值字段：自动填充
+      for (const field of formFields) {
+        if (field.type === 'fixed' && field.fixedValue) {
+          submitData[field.key] = field.fixedValue;
+        }
+      }
+
       for (const key of Object.keys(formData)) {
         const val = formData[key];
         if (val && typeof val === 'object' && val.value !== undefined) {
@@ -367,12 +392,16 @@ Page({
         if (cityField && locRes.city) {
           // 城市字段是级联的，需要匹配字典中的选项
           const cityDict = activity.dictionaries?.city || [];
-          const cityName = locRes.city;
+          // 直辖市：支付宝定位返回 city 为省份名（如"北京市"），字典里存的是区名（如"东城区"）
+          // 此时用省份名匹配，并传给经销商筛选
+          const isDirectCity = locRes.city === locRes.province;
+          const cityName = isDirectCity ? locRes.province : locRes.city;
           const matched = cityDict.find((c: any) => c.label === cityName || c.label.includes(cityName));
-          console.log('[autoFill] 城市匹配:', { city: cityName, matched: !!matched, dictCount: cityDict.length });
+          console.log('[autoFill] 城市匹配:', { city: cityName, matched: !!matched, isDirectCity, dictCount: cityDict.length });
           if (matched) {
             formData[cityField.key] = { label: matched.label, value: matched.value };
           } else {
+            // 直辖市没匹配到区也填省份名
             formData[cityField.key] = cityName;
           }
         }
@@ -381,8 +410,10 @@ Page({
         const dealerField = (this.data.formFields as FormField[]).find(f => f.key === 'dealer' || f.key === 'dealerName');
         if (dealerField && locRes.city) {
           const dealerDict = activity.dictionaries?.dealer || [];
+          // 直辖市用省份名匹配经销商 parentValue
+          const dealerCity = locRes.city === locRes.province ? locRes.province : locRes.city;
           const matchedDealers = dealerDict.filter((d: any) =>
-            d.parentValue === locRes.city || d.parentValue.includes(locRes.city)
+            d.parentValue === dealerCity || d.parentValue.includes(dealerCity)
           );
           if (matchedDealers.length > 0) {
             formData[dealerField.key] = { label: matchedDealers[0].label, value: matchedDealers[0].value };
@@ -396,6 +427,15 @@ Page({
         console.log('[autoFill] 定位失败:', JSON.stringify(err));
       },
     });
+  },
+
+  // ====== 隐私协议 ======
+  onPrivacyChange(e: any) {
+    this.setData({ privacyAgreed: e.detail.value });
+  },
+
+  onPrivacyTap() {
+    my.navigateTo({ url: '/pages/activity/privacy/privacy' });
   },
 
   // ====== 完成 ======

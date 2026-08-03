@@ -17,7 +17,9 @@ Page({
       const list = await api.getActivities();
       const processed = list.map((a: any) => ({
         ...a,
-        displayImage: resolveImage(a.displayImage),
+        headImage: Array.isArray(a.headImage)
+          ? a.headImage.map((url: string) => resolveImage(url))
+          : resolveImage(a.headImage),
       }));
       this.setData({ activities: processed, loading: false });
     } catch (err) {

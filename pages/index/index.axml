@@ -75,13 +75,7 @@
         src="{{item.displayImage || 'https://via.placeholder.com/160x160/f0f0f0/999?text=News'}}"
         mode="aspectFill"
       />
-      <image
-        a:if="{{item.contentImage}}"
-        class="news-content-img"
-        src="{{item.contentImage}}"
-        mode="aspectFill"
-      />
-      <view class="news-title">{{item.title}}</view>
+
     </view>
   </view>
 

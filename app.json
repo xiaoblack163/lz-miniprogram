@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/activity/list/list",
     "pages/activity/detail/detail",
+    "pages/activity/privacy/privacy",
     "pages/clue/list/list",
     "pages/clue/detail/detail",
     "pages/user/index/index",

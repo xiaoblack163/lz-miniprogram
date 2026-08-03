@@ -20,6 +20,7 @@ Page({
       const detail = await api.getNewsDetail(id);
       if (detail) {
         detail.displayImage = resolveImage(detail.displayImage);
+        detail.contentImage = resolveImage(detail.contentImage);
       }
       this.setData({ news: detail, loading: false });
     } catch (err) {

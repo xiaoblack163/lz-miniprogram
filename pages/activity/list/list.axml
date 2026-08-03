@@ -1,6 +1,6 @@
 <view class="page-activity-list">
   <view class="activity-item" a:for="{{activities}}" a:for-item="item" data-code="{{item.code}}" onTap="onActivityTap">
-    <image class="activity-img" src="{{item.displayImage}}" mode="aspectFill" />
+    <image class="activity-img" src="{{item.headImage && item.headImage.length > 0 ? item.headImage[0] : item.headImage}}" mode="aspectFit" />
     <view class="activity-info">
       <view class="activity-name">{{item.name || item.title}}</view>
       <view class="activity-time" a:if="{{item.createTime}}">{{item.createTime}}</view>

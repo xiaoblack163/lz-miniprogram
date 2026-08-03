@@ -1,6 +1,6 @@
 <view class="page-news-list">
   <view class="news-item" a:for="{{newsList}}" a:for-item="item" a:for-index="idx" data-id="{{item._id}}" onTap="onNewsTap">
-    <image class="news-img" src="{{item.displayImage}}" mode="aspectFill" />
+    <image class="news-img" src="{{item.displayImage}}" mode="aspectFit" />
     <view class="news-info">
       <view class="news-title">{{item.title}}</view>
       <view class="news-time">{{item.createTime}}</view>

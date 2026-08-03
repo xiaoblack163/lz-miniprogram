@@ -1,4 +1,5 @@
-import { isLogin, getToken, clearToken, getUserInfo } from '../../utils/auth';
+import { isLogin, getToken, clearToken, getUserInfo, setUserInfo } from '../../utils/auth';
+import { api } from '../../utils/api';
 
 Page({
   data: {
@@ -27,11 +28,9 @@ Page({
 
   async refreshUserProfile() {
     try {
-      const { api } = require('../../utils/api');
       const user = await api.getUserProfile();
       if (user) {
         this.setData({ userInfo: user });
-        const { setUserInfo } = require('../../utils/auth');
         setUserInfo(user);
       }
     } catch (err) {

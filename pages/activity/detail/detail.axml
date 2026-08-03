@@ -2,12 +2,19 @@
 
   <!-- ====== Step 1: 表单填写 ====== -->
   <block a:if="{{step === 'form'}}">
-    <!-- 头图 -->
-    <image
-      class="head-image"
-      src="{{activity.headImage || 'https://via.placeholder.com/750x400/1677FF/ffffff?text=Activity'}}"
-      mode="widthFix"
-    />
+    <!-- 头图轮播 -->
+    <swiper
+      class="head-swiper"
+      a:if="{{activity.headImage && activity.headImage.length > 0}}"
+      indicator-dots="{{activity.headImage.length > 1}}"
+      autoplay="{{activity.headImage.length > 1}}"
+      interval="3000"
+      circular="{{activity.headImage.length > 1}}"
+    >
+      <swiper-item a:for="{{activity.headImage}}" a:for-item="img">
+        <image class="head-image" src="{{img}}" mode="widthFix" />
+      </swiper-item>
+    </swiper>
 
     <!-- 已参与提示 -->
     <view class="participated-tip" a:if="{{hasParticipated && previousLead}}">
@@ -19,8 +26,6 @@
     </view>
 
     <view class="form-section">
-      <view class="form-title">{{activity.title || activity.name}}</view>
-      <view class="form-desc" a:if="{{activity.description}}">{{activity.description}}</view>
 
       <!-- 动态表单字段 -->
       <view class="form-fields">
@@ -53,6 +58,15 @@
       <view class="form-error" a:if="{{formError}}">{{formError}}</view>
     </view>
 
+    <!-- 隐私协议 -->
+    <view class="privacy-agreement">
+      <radio checked="{{privacyAgreed}}" onChange="onPrivacyChange" />
+      <text class="privacy-text">
+        我已阅读并同意
+        <text class="privacy-link" onTap="onPrivacyTap">《个人信息隐私保护协议》</text>
+      </text>
+    </view>
+
     <!-- 提交按钮 -->
     <view class="submit-bar">
       <button class="submit-btn" disabled="{{submitting}}" onTap="onSubmit">
@@ -60,13 +74,19 @@
       </button>
     </view>
 
-    <!-- 底图 -->
-    <image
-      class="bg-image"
-      src="{{activity.bgImage}}"
-      mode="widthFix"
-      a:if="{{activity.bgImage}}"
-    />
+    <!-- 底图轮播 -->
+    <swiper
+      class="bg-swiper"
+      a:if="{{activity.bgImage && activity.bgImage.length > 0}}"
+      indicator-dots="{{activity.bgImage.length > 1}}"
+      autoplay="{{activity.bgImage.length > 1}}"
+      interval="3000"
+      circular="{{activity.bgImage.length > 1}}"
+    >
+      <swiper-item a:for="{{activity.bgImage}}" a:for-item="img">
+        <image class="bg-image" src="{{img}}" mode="widthFix" />
+      </swiper-item>
+    </swiper>
   </block>
 
   <!-- ====== Step 2: 协议上传 ====== -->

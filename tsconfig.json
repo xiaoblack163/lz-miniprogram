@@ -4,6 +4,7 @@
     "noEmit": false,
     "esModuleInterop": false,
     "noImplicitThis": false,
+    "skipLibCheck": true,
     "types": [
       "@mini-types/alipay"
     ],
