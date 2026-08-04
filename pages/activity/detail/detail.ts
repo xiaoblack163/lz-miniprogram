@@ -1,6 +1,6 @@
 import { api } from '../../utils/api';
 import { resolveImage } from '../../utils/request';
-import { isLogin, getUserInfo } from '../../utils/auth';
+import { isLogin, getUserInfo, setToken, setUserInfo } from '../../utils/auth';
 
 interface FormField {
   key: string;
@@ -22,6 +22,9 @@ Page({
     formError: '',
     submitting: false,
     privacyAgreed: false,
+    phoneAuthed: false,
+    loading: true,
+    phoneLoading: false,
     // 提交后保留的关键信息（用于协议回填）
     submittedPhone: '',
     // Protocol
@@ -38,16 +41,54 @@ Page({
     hasParticipated: false,
     previousLead: null as any,
     checking: false,
+    // 静默登录持有的 userId（同 storage 同步）
+    userId: '',
   },
 
   onLoad(query: any) {
     const code = query.code || query._id;
+    // 把 storage 里已有的 userId 同步到 page data，便于 onPhoneAuth 直接使用
+    const cachedUserId = (getUserInfo() as any)?.userId || '';
+    if (cachedUserId) {
+      this.setData({ userId: cachedUserId });
+    }
     if (code) {
       this.loadActivity(code);
     }
   },
 
+  // 静默登录（获取 userId + token，不弹窗）
+  async silentLogin() {
+    // 已有 token + userId 才跳过；只 token 没 userId 也强制重登一次
+    const cached = getUserInfo() as any;
+    if (isLogin() && cached?.userId) return;
+    try {
+      const authResult: any = await new Promise((resolve, reject) => {
+        my.getAuthCode({
+          scopes: 'auth_base',
+          success: (res: any) => resolve(res),
+          fail: (err: any) => reject(err),
+        });
+      });
+      const result: any = await api.authCodeLogin(authResult.authCode);
+      const token = result?.token;
+      const userId = result?.userId;
+      if (token) setToken(token);
+      if (userId) {
+        // 持久化到 storage，onPhoneAuth 才能读到 userId
+        setUserInfo({ userId, ...(cached || {}) });
+        this.setData({ userId });
+        console.log('[silentLogin] 静默登录成功 userId:', userId);
+      } else {
+        console.log('[silentLogin] 后端未返回 userId，原始返回:', JSON.stringify(result));
+      }
+    } catch (err: any) {
+      console.log('[silentLogin] 静默登录失败:', err?.errorMessage || err?.message || err);
+    }
+  },
+
   async loadActivity(code: string) {
+    this.setData({ loading: true });
     try {
       const result = await api.getActivityDetail(code);
       const activity = result.activity || result;
@@ -69,10 +110,21 @@ Page({
       }
       if (activity.displayImage) activity.displayImage = resolveImage(activity.displayImage);
 
+      // 已登录用户自动填手机号
+      const initFormData: Record<string, any> = {};
+      if (isLogin()) {
+        const userInfo = getUserInfo();
+        const phoneField = fields.find(f => f.key === 'phone' || f.key === 'mobile');
+        if (phoneField && userInfo?.phone) {
+          initFormData[phoneField.key] = userInfo.phone;
+        }
+      }
+
       this.setData({
         activity,
         formFields: fields,
-        formData: {},
+        formData: initFormData,
+        phoneAuthed: !!initFormData[fields.find(f => f.key === 'phone' || f.key === 'mobile')?.key || ''],
       });
 
       // 自动填充手机号和定位
@@ -83,6 +135,8 @@ Page({
     } catch (err) {
       console.error('Failed to load activity:', err);
       my.showToast({ content: '加载活动失败', type: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 
@@ -227,6 +281,70 @@ Page({
     });
   },
 
+  // ====== 手机号授权 ======
+  // 用户点击授权按钮并同意后触发（来自 open-type="getAuthorize"）
+  async onGetPhoneAuth() {
+    console.log('[phoneAuth] onGetPhoneAuth 触发');
+    if (this.data.phoneLoading) return;
+    this.setData({ phoneLoading: true });
+    my.showLoading({ content: '授权中...' });
+
+    try {
+      // 1. 确保有 userId + token
+      await this.silentLogin();
+      const userId = this.data.userId || (getUserInfo() as any)?.userId || '';
+      if (!userId) {
+        throw new Error('未获取到用户身份，请重试');
+      }
+      console.log('[phoneAuth] userId 已就绪:', userId);
+
+      // 2. 调 my.getPhoneNumber 拿加密 response（用户已同意授权场景下会成功）
+      const encryptedData: string = await new Promise((resolve, reject) => {
+        my.getPhoneNumber({
+          success: (res: any) => {
+            let data = res?.response;
+            try {
+              const parsed = JSON.parse(data);
+              data = parsed?.response || data;
+            } catch {}
+            if (data) resolve(data);
+            else reject(new Error('未拿到加密数据'));
+          },
+          fail: (err: any) => reject(new Error(err?.errorMessage || '获取手机号失败')),
+        });
+      });
+      console.log('[phoneAuth] encryptedData 长度:', encryptedData?.length);
+
+      // 3. 后端用 userId + 加密数据解密出手机号
+      const result: any = await api.phoneLogin(userId, encryptedData);
+      const phone = result?.userInfo?.mobile || result?.mobile || '';
+      if (!phone) throw new Error('后端未返回手机号');
+
+      // 4. 写入表单 + storage
+      const { formFields } = this.data as any;
+      const phoneField = formFields.find((f: any) => f.key === 'phone' || f.key === 'mobile');
+      if (phoneField) {
+        this.setData({ [`formData.${phoneField.key}`]: phone, phoneAuthed: true });
+      }
+      setUserInfo({ userId, phone, ...(getUserInfo() as any) });
+      my.hideLoading();
+      this.setData({ phoneLoading: false });
+      console.log('[phoneAuth] 手机号已填入:', phone);
+    } catch (err: any) {
+      my.hideLoading();
+      this.setData({ phoneLoading: false });
+      console.error('[phoneAuth] 失败:', err);
+      my.showToast({ content: err?.errorMessage || err?.message || '授权失败', type: 'none' });
+    }
+  },
+
+  // 用户拒绝授权时触发
+  handlePhoneAuthError(e: any) {
+    console.error('[phoneAuth] 用户拒绝授权:', e?.detail);
+    this.setData({ phoneLoading: false });
+    my.showToast({ content: '已取消授权', type: 'none' });
+  },
+
   // ====== 提交表单 ======
   async onSubmit() {
     const { formFields, formData, activity } = this.data;
@@ -235,6 +353,15 @@ Page({
     if (!this.data.privacyAgreed) {
       this.setData({ formError: '请先阅读并同意隐私保护协议' });
       return;
+    }
+
+    // 未登录先静默登录
+    if (!isLogin()) {
+      try {
+        await this.silentLogin();
+      } catch {
+        // 静默登录失败不阻塞提交
+      }
     }
 
     // 校验必填字段（固定值字段不需要校验）

@@ -36,8 +36,6 @@ Page({
       const activities = (config.hotActivities || []).map((a: any) => ({
         ...a,
         displayImage: resolveImage(a.displayImage),
-        headImage: resolveImage(a.headImage),
-        bgImage: resolveImage(a.bgImage),
       }));
       const hotNews = (config.hotNews || []).map((n: any) => ({
         ...n,

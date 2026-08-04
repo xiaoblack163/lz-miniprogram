@@ -1,7 +1,12 @@
 <view class="page-detail">
 
+  <!-- Loading -->
+  <view class="loading-state" a:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
   <!-- ====== Step 1: 表单填写 ====== -->
-  <block a:if="{{step === 'form'}}">
+  <block a:if="{{!loading && step === 'form'}}">
     <!-- 头图轮播 -->
     <swiper
       class="head-swiper"
@@ -16,25 +21,38 @@
       </swiper-item>
     </swiper>
 
-    <!-- 已参与提示 -->
-    <view class="participated-tip" a:if="{{hasParticipated && previousLead}}">
-      <text class="participated-icon">📋</text>
-      <view class="participated-content">
-        <text class="participated-title">您已参加过该活动</text>
-        <text class="participated-time" a:if="{{previousLead.createTime}}">提交时间：{{previousLead.createTime}}</text>
-      </view>
-    </view>
-
     <view class="form-section">
 
       <!-- 动态表单字段 -->
       <view class="form-fields">
         <view class="form-group" a:for="{{formFields}}" a:for-item="field" a:for-index="idx" key="field.key">
-          <!-- text / phone 类型 -->
+          <!-- phone 类型 + 授权按钮 -->
+          <view class="phone-input-row" a:if="{{field.type === 'phone'}}">
+            <input
+              class="form-input phone-input"
+              type="phone"
+              placeholder="{{field.placeholder || '请输入' + field.label}}"
+              value="{{formData[field.key]}}"
+              data-key="{{field.key}}"
+              onInput="onFieldInput"
+            />
+            <button
+              class="phone-auth-inline"
+              a:if="{{!phoneAuthed && !formData[field.key]}}"
+              open-type="getAuthorize"
+              scope="phoneNumber"
+              onGetAuthorize="onGetPhoneAuth"
+              onError="handlePhoneAuthError"
+              disabled="{{phoneLoading}}"
+            >
+              {{phoneLoading ? '处理中...' : '手机号授权'}}
+            </button>
+          </view>
+          <!-- text 类型 -->
           <input
-            a:if="{{field.type === 'text' || field.type === 'phone'}}"
+            a:elif="{{field.type === 'text'}}"
             class="form-input"
-            type="{{field.type === 'phone' ? 'phone' : 'text'}}"
+            type="text"
             placeholder="{{field.placeholder || '请输入' + field.label}}"
             value="{{formData[field.key]}}"
             data-key="{{field.key}}"
